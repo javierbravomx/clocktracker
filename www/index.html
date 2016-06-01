@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Metadatos para dispositivos móviles y importar el css de jQuery Mobile -->
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
@@ -11,22 +12,24 @@
 <body>
     <div data-role="page" id="home">
         <div data-role="header">
-            <h1>Home</h1>
+            <h1>Start</h1>
         </div>
-
+        <!-- Página principal del escanéo -->
         <div data-role="main" class="ui-content landing">
             <p>
                 <a target="_blank" href="javascript:scan();" style="text-decoration: none"><button>Scan</button></a>
+                <!-- Para propósitos de debugging
                 <a target="_blank" href="#display" style="text-decoration: none"><button>Display Scanned Data</button></a>
+            -->
             </p>
         </div>
     </div>
+    <!-- Página para debugging donde se muestra los datos capturados
     <div data-role="page" id="display">
         <div data-role="header">
-            <a target="_blank" href="#home" class="ui-btn ui-icon-home ui-btn-icon-left">Home</a>
+            <a target="_blank" href="#home" class="ui-btn ui-icon-home ui-btn-icon-left">Main</a>
             <h1>Display</h1>
         </div>
-
         <div data-role="main" class="ui-content">
             <table data-role="table" data-mode="column" id="allTable" class="ui-responsive table-stroke">
                 <thead>
@@ -40,71 +43,72 @@
             </table>
         </div>
     </div>
-
-
-
+-->
+    <!-- Cargar javascripts de jQuery, jQuery Mobile, y Cordova -->
     <script type="text/javascript" src="cordova.js"></script>
     <script src="js/jquery-2.2.3.min.js"></script>
     <script src="js/jquery.mobile-1.4.5.min.js"></script>
+    <!--  Script donde se escanea el código QR, almacena, y se envía a la BD -->
     <script>
-    localStorage.clear();
+    //Crear espacio local para almacenar datos, en caso que no exista.
     if(localStorage.getItem("LocalData") == null)
     {
         var data = [];
         data = JSON.stringify(data);
         localStorage.setItem("LocalData", data);
     }
+    //Escanear el código QR.
     function scan()
     {
+        //Cargar el código de Cordova para escanear un código
         cordova.plugins.barcodeScanner.scan(
             function (result) {
+                //Si el resultado es un código de barras....
                 if(!result.cancelled)
                 {
+                    //Si el resultado es un código QR.
                     if(result.format == "QR_CODE")
                     {
-                            var date = new Date();
-                            var currentTime = date.getHours() + ":" + date.getMinutes();
-                            var value = result.text;
-                            var url="http://rigel.fca.unam.mx/~li413008451/clocktrackerserver/database/json.php";
-                            $.getJSON(url,function(result){
-                                    var employee_id=result[value-1].employee_id;
-                                    var employee_first_name=result[value-1].employee_first_name;
-                                    var employee_last_name=result[value-1].employee_last_name;
-                                    var employee_hours=date.getHours();
-
-                                    var data = localStorage.getItem("LocalData");
-                                    console.log(data);
-                                    data = JSON.parse(data);
-                                    data[data.length] = [currentTime, value];
-                                    localStorage.setItem("LocalData", JSON.stringify(data));
-                                    var dataString="employee_id="+employee_id+"&employee_first_name="+employee_first_name+"&employee_last_name="+employee_last_name+"&employee_hours="+employee_hours+"&update=";
-
-                                    $.ajax({
-                                            type: "POST",
-                                            url:"http://rigel.fca.unam.mx/~li413008451/clocktrackerserver/database/update.php",
-                                            data: dataString,
-                                            crossDomain: true,
-                                            cache: false,
-                                            success: function(data){
-                                                if(data=="ok")
-                                                {
-                                                    alert("Updated");
-                                                }
-                                                else if(data=="error")
-                                                {
-                                                    alert("Error");
-                                                }
-                                            }
-                                        });
-                                    alert("Good-Bye, " + employee_first_name + " " + employee_last_name);
-
+                        //Crear variables para estampillas de tiempo, valores del identificador de código.
+                        var date = new Date();
+                        var currentTime = date.getHours() + ":" + date.getMinutes();
+                        var value = result.text;
+                        //Cargar la base de datos para lectura.
+                        var url="http://rigel.fca.unam.mx/~li413008451/clocktrackerserver/database/json.php";
+                        $.getJSON(url,function(result){
+                            //Igualar el código QR con el id de empleado en la base de datos, más su nombre y las horas.
+                            var employee_id=result[value-1].employee_id;
+                            var employee_first_name=result[value-1].employee_first_name;
+                            var employee_last_name=result[value-1].employee_last_name;
+                            var employee_hours=date.getHours();
+                            //Creación de un objeto de almacenamiento local, donde se almacena la estampilla del tiempo y el id.
+                            var data = localStorage.getItem("LocalData");
+                            console.log(data);
+                            data = JSON.parse(data);
+                            data[data.length] = [currentTime, value];
+                            localStorage.setItem("LocalData", JSON.stringify(data));
+                            //En caso de modificación de horas, se crea un string para mandar a la BD.
+                            var dataString="employee_id="+employee_id+"&employee_first_name="+employee_first_name+"&employee_last_name="+employee_last_name+"&employee_hours="+employee_hours+"&update=";
+                            //Métodos ajax para actualizar la BD.
+                            $.ajax({
+                                type: "POST",
+                                url:"http://rigel.fca.unam.mx/~li413008451/clocktrackerserver/database/update.php",
+                                data: dataString,
+                                crossDomain: true,
+                                cache: false,
+                                success: function(data){
+                                    if(data=="ok")
+                                    {
+                                        alert("Updated");
+                                    }
+                                    else if(data=="error")
+                                    {
+                                        alert("Error");
+                                    }
+                                }
                             });
-
-
-
-
-
-
+                            alert("Good-Bye, " + employee_first_name + " " + employee_last_name);
+                        });
                     }
                 }
             },
@@ -113,6 +117,7 @@
             }
         );
     }
+    /* Tabla de debuggging en caso si el bóton de mostrar datos está habilitado.
     $(document).on("pagebeforeshow", "#display", function() {
         $("table#allTable tbody").empty();
 
@@ -135,7 +140,7 @@
     {
         window.open(url, '_blank', 'location=yes');
     }
-
+*/
     </script>
 </body>
 </html>

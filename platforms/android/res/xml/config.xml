@@ -15,12 +15,12 @@
         <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser" />
     </feature>
     <allow-intent href="market:*" />
-    <name>clocktracker</name>
+    <name>SRESP</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        Cliente para escaneo de codigos QR de empleados.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="javierbravomx@gmail.com" href="http://javierbravomx.github.io/clocktracker">
+        SRESP
     </author>
     <content src="index.html" />
     <access origin="*" />
