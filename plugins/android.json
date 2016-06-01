@@ -9,7 +9,20 @@
     "installed_plugins": {
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.javierbravomx.clocktracker"
+        },
+        "phonegap-plugin-barcodescanner": {
+            "PACKAGE_NAME": "com.javierbravomx.clocktracker"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.javierbravomx.clocktracker"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "com.javierbravomx.clocktracker"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "com.javierbravomx.clocktracker"
+        }
+    }
 }
